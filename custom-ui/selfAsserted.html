@@ -1053,13 +1053,17 @@
             </div>
             <div id="customDiv" class="attr customDiv">
               <hr />
-              <div class="buttons">
-                <button onclick="getCode()">Code by email</button>
-              </div>
+              <p id="customNav" class="">
+                <button id="btnPrev" class="hidden" onclick="prev()">Prev</button>
+                <button id="btnNext" onclick="next()">Next</button>
+              </p>
               <p class="hidden">
                 <button onclick="toggleCustomList()">Toggle</button>
               </p>
               <ul id="customList" class="hidden"></ul>
+              <div id="customButtons" class="buttons hidden">
+                <button onclick="getCode()">Code by email</button>
+              </div>
             </div>
           </div>
         </div>
@@ -1067,21 +1071,32 @@
     </div>
   </div>
   <script>
+    var ids = ['extension_dob', 'extension_code'];
+
     function init() {
       const txtCode = document.getElementById('extension_code');
       txtCode.readOnly = true;
+
+      // moveCustomItems();
+
+      setCustomItems();
+
     }
 
-    function moveDob() {
+    function moveCustomItems() {
       var divApi = document.getElementById('api');
-      var dobLiSelector = '#api ul > li.DateTimeDropdown';
-      var dobLi = document.querySelector(dobLiSelector);
       var buttonsDivSelector = '.buttons';
       var buttonsDivs = divApi.getElementsByClassName('buttons');
       var buttonsDiv = buttonsDivs[buttonsDivs.length - 1];
       var customList = document.getElementById('customList');
-      customList.appendChild(dobLi);
       var customDiv = document.getElementById('customDiv');
+
+      var children = document.querySelectorAll('#attributeList>ul>li');
+      var length = children.length;
+      var lis = [children[length - 2], children[length - 1]];
+      lis.forEach(li => {
+        customList.appendChild(li);
+      });
 
       buttonsDiv.parentNode.insertBefore(customDiv, buttonsDiv);
     }
@@ -1089,6 +1104,20 @@
     function toggleCustomList() {
       var customList = document.getElementById('customList');
       customList.classList.toggle('hidden');
+    }
+
+    function setCustomItems() {
+      ids.forEach(id => {
+        var li = document.getElementById(id).parentNode.parentNode;
+        li.id = `li-${id}`;
+        li.classList.add('hidden');
+      });
+      var divApi = document.getElementById('api');
+      var buttonsDivSelector = '.buttons';
+      var buttonsDivs = divApi.getElementsByClassName('buttons');
+      var buttonsDiv = buttonsDivs[buttonsDivs.length - 1];
+      var customDiv = document.getElementById('customDiv');
+      buttonsDiv.parentNode.insertBefore(customDiv, buttonsDiv);
     }
 
     function getCode() {
@@ -1107,8 +1136,39 @@
       });
     }
 
+    function next() {
+      var children = document.querySelectorAll('#attributeList > ul > li');
+      liIds = ids.map(id => `li-${id}`);
+      children.forEach(li => {
+        if(li.id && liIds.indexOf(li.id) >= 0) {
+          li.classList.remove('hidden');
+        }
+        else {
+          li.classList.add('hidden');
+        }
+      });
+      document.getElementById('btnNext').classList.add('hidden');
+      document.getElementById('btnPrev').classList.remove('hidden');
+      document.getElementById('customButtons').classList.remove('hidden');
+    }
+
+    function prev() {
+      var children = document.querySelectorAll('#attributeList > ul > li');
+      liIds = ids.map(id => `li-${id}`);
+      children.forEach(li => {
+        if(li.id && liIds.indexOf(li.id) >= 0) {
+          li.classList.add('hidden');
+        }
+        else {
+          li.classList.remove('hidden');
+        }
+      });
+      document.getElementById('btnNext').classList.remove('hidden');
+      document.getElementById('btnPrev').classList.add('hidden');
+      document.getElementById('customButtons').classList.add('hidden');
+    }
+
     init();
-      // moveDob();
   </script>
 </body>
 
